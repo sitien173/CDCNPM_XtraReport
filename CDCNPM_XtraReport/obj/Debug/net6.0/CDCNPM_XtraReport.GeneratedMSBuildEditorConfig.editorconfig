@@ -1,0 +1,36 @@
+is_global = true
+build_property.TargetFramework = net6.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = CDCNPM_XtraReport
+build_property.RootNamespace = CDCNPM_XtraReport
+build_property.ProjectDir = D:\Project\Project C#\CDCNPM_XtraReport\CDCNPM_XtraReport\
+build_property.RazorLangVersion = 6.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Project\Project C#\CDCNPM_XtraReport\CDCNPM_XtraReport
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/Project/Project C\#/CDCNPM_XtraReport/CDCNPM_XtraReport/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/Project C\#/CDCNPM_XtraReport/CDCNPM_XtraReport/Views/Home/QBE.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxRQkUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/Project C\#/CDCNPM_XtraReport/CDCNPM_XtraReport/Views/PrintReport/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJpbnRSZXBvcnRcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/Project C\#/CDCNPM_XtraReport/CDCNPM_XtraReport/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Project/Project C\#/CDCNPM_XtraReport/CDCNPM_XtraReport/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

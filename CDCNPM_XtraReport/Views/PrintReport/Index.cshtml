@@ -1,0 +1,8 @@
+﻿@using DevExpress.AspNetCore
+@{
+    ViewBag.Title = "Print Report";
+}
+@Html.DevExpress().WebDocumentViewer("DocumentViewer").Height("1000px").Bind(@ViewBag.Report)
+
+
+

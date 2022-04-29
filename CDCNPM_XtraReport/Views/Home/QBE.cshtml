@@ -1,0 +1,358 @@
+﻿@using Microsoft.AspNetCore.Http;
+@{
+    ViewBag.Title = "QBE";
+}
+<div class="container">
+    <div class="row g-3 text-center mb-3">
+        <h2>Query-By-Example (QBE)</h2>
+        <a href="@Url.Content("~/")" style="text-decoration:none;cursor:pointer;width: 250px;margin:0 auto;text-align:center;padding:15px;uppercase;transition:.5s;background-size:200% auto;color:#fff;box-shadow:0 0 20px #eee;border-radius:10px;display:block;outline:none;background-image: linear-gradient(to right, rgb(36, 198, 220) 0%, rgb(81, 74, 157) 51%, rgb(36, 198, 220) 100%);">
+            Database: <strong> @Context.Session.GetString("databaseName") </strong>
+        </a>
+    </div>
+
+    <div class="form-group row g-3 align-items-center">
+        <div class="col-2">
+            <label for="titleReport" class="col-form-label" style="width: 100%; margin:10px auto;text-align:center;text-transform:uppercase;transition:.5s;background-size:200% auto;color:#fff;box-shadow:0 0 20px #eee;border-radius:10px;display:block;outline:none;background-image: linear-gradient(to right, rgb(229, 45, 39) 0%, rgb(179, 18, 23) 51%, rgb(229, 45, 39) 100%);">Tiêu Đề Báo Cáo</label>
+        </div>
+        <div class="col-10">
+            <input type="text" class="form-control text-uppercase text-danger fs-6 fw-bold font-monospace" id="titleReport" placeholder="Tiêu đề">
+        </div>
+    </div>
+    <div class="form-group row g-3 align-items-center my-3">
+        <div class="d-flex justify-content-end d-none">
+            <button type="button" id="export-query" onclick="exportQuery()" class="btn btn-success">Tạo Câu Query</button>
+        </div>
+
+        <div class="col-12">
+            <textarea class="form-control fs-6 fw-normal font-monospace" style="color: #0d6efd" id="query" rows="8"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end d-none">
+            <button type="button" id="format-query" onclick="formatQuery()" class="btn btn-success" style="margin-right: 20px">Format Query</button>
+            <button type="button" id="export-report" onclick="printReport()" class="btn btn-primary">In Report</button>
+        </div>
+    </div>
+    <table class="container table table-bordered table-hover d-none" id="table-thongke">
+        <thead class="table-dark ">
+            <tr>
+                <th onclick="sort(this)" scope="col" class="text-center align-middle" id="tenbang" style="cursor: pointer" title="sort">
+                    Tên Bảng
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5z"></path>
+                    </svg>
+                </th>
+                <th scope="col" class="text-center align-middle">Tên Cột</th>
+                <th scope="col" class="text-center align-middle">Sắp Xếp</th>
+                <th scope="col" class="text-center align-middle">Hiển thị</th>
+                <th scope="col" class="text-center align-middle">Sử Dụng</th>
+                <th scope="col" class="text-center align-middle">Điều Kiện</th>
+                <th scope="col" class="text-center align-middle">Toán Tử</th>
+            </tr>
+        </thead>
+        <tbody id="thongke"></tbody>
+    </table>
+
+    <div class="container my-2">
+        <div class="form-group row g-3 ">
+            <div class="row g-3" style="background-image: linear-gradient(0deg, rgb(255, 222, 233) 0%, rgb(181, 255, 252) 100%);">
+                <div class="col-4" id="tables">
+                    <div style="width: 95%; height: 60px; margin: 10px auto; padding: 15px; text-align: center; text-transform: uppercase; transition: .5s; background-size: 200% auto; color: #fff; box-shadow: 0 0 20px #eee; border-radius: 10px; display: block; outline: none; background-image: linear-gradient(to right, rgb(36, 198, 220) 0%, rgb(81, 74, 157) 51%, rgb(36, 198, 220) 100%); animation: fly 1s ease-out ">
+                        <h4 class="text-center"><strong>Chọn Table</strong></h4>
+                    </div>
+
+
+                </div>
+                <div class="col-8 row g-3 d-flex justify-content-center" id="columns">
+                    <div style="width: 100%; height: 60px; margin: 10px auto; padding: 15px; text-align: center; text-transform: uppercase; transition: .5s; background-size: 200% auto; color: #fff; box-shadow: 0 0 20px #eee; border-radius: 10px; display: block; outline: none; background-image: linear-gradient(to right, rgb(118, 184, 82) 0%, rgb(141, 194, 111) 51%, rgb(118, 184, 82) 100%); animation: fly 1s ease-out ">
+                        <h4 class="text-center"><strong>Chọn Column</strong></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+<script>
+
+     function formatQuery() {
+       var sql = $('#query').val();
+       // call api format sql
+       $.ajax({
+           url: 'https://sqlformat.org/api/v1/format',
+           type: 'POST',
+           dataType: 'json',
+           crossDomain: true,
+           data: {
+               sql: sql,
+               reindent: 1
+           },
+           success: function(result) {
+               let matches = result.result.match(/\n/g);
+               let breaks = matches ? matches.length : 2;
+               let $query = $('#query');
+
+               $query.attr('rows', breaks + 2);
+               $query.val(result.result);
+
+               $('#export-report').parent().removeClass('d-none');
+           }
+       });
+    }
+
+
+    function printReport() {
+       let titleReport = $('#titleReport').val();
+       if (titleReport.trim() == '') titleReport = " ";
+       let query = $('#query').val();
+       const data = {
+           title: titleReport,
+           query: query
+       };
+       openWindowWithPost(baseUrl + '/PrintReport', data);
+    }
+
+    function openWindowWithPost(url, data) {
+       var form = document.createElement("form");
+       form.target = "_blank";
+       form.method = "POST";
+       form.action = url;
+       form.style.display = "none";
+
+       for (var key in data) {
+           var input = document.createElement("input");
+           input.type = "hidden";
+           input.name = key;
+           input.value = data[key];
+           form.appendChild(input);
+       }
+
+       document.body.appendChild(form);
+       form.submit();
+       document.body.removeChild(form);
+    }
+
+    function sort(element) {
+       var table = $(element).parents('table').eq(0)
+       var rows = table.find('tr:gt(0)').toArray().sort(comparer($(element).index()))
+       element.asc = !element.asc
+       if (!element.asc) {
+           rows = rows.reverse()
+       }
+       for (var i = 0; i < rows.length; i++) {
+           table.append(rows[i])
+       }
+    }
+
+    function comparer(index) {
+       return function(a, b) {
+           var valA = getCellValue(a, index),
+               valB = getCellValue(b, index)
+           return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+       }
+    }
+
+    function getCellValue(row, index) {
+       return $(row).children('td').eq(index).text()
+    }
+
+    // sinh câu query
+    function exportQuery() {
+       let $data = $('#thongke tr');
+       let arr = [];
+
+       // duyệt tất cả phần tử bên trong element tr
+       $data.children().each(function(index, value) {
+           // td > element. lấy phần tử bên trong td
+           let data = value.firstChild.value;
+            // các trường text không lấy được value thì lấy text
+           if (typeof data === "undefined") {
+               data = value.textContent;
+           }
+            // lưu vào 1 mảng theo thứ tự
+            arr.push(data);
+       })
+
+       let countObject = arr.length / 7;
+       let arrObj = [];
+       let index = 0;
+       for (let i = 0; i < countObject && index < arr.length; i++, index += 7) {
+
+           let tenbang = arr[index];
+           let tencot = arr[index + 1];
+           let sort = arr[index + 2];
+           let select = arr[index + 3];
+           let used = arr[index + 4];
+           let criteria = $('#criteria_' + tenbang + '_' + tencot + '').val();
+           let toantu = arr[index + 6];
+
+           let object = {
+               tenbang: tenbang,
+               tencot: tencot,
+               isSelect: select == 'select',
+               criteria: criteria,
+               toantu: toantu,
+               isSortAsc: sort == 'asc',
+               isSortDesc: sort == 'desc',
+               used: used
+           };
+           arrObj.push(object);
+       }
+
+       var data = JSON.stringify(arrObj);
+       console.log(arrObj);
+       $.ajax({
+           url: apiBaseUrl + "/ExportQuery",
+           type: 'POST',
+           data: data,
+           contentType: 'application/json; charset=utf-8',
+           dataType: 'json',
+           async: false,
+           success: function(data) {
+               if (data.success == false) {
+                   alert(data.message);
+                   $('#query').val(data.data);
+                   $('#export-report').parent().addClass('d-none');
+               } else {
+                   let $query = $('#query');
+                   $query.val(data.data);
+                   $('#export-report').parent().removeClass('d-none');
+               }
+           }
+       });
+    }
+    $(document).ready(() => {
+       let $tables = $('#tables');
+       // đếm cột được chọn. Nếu > 0 thì cho hiển thị bảng thống kê
+       let countColumnChecked = 0;
+       // call api lấy ds table hiện tại ứng với database đã chọn
+       $.ajax({
+           url: apiBaseUrl + "/Table",
+           success: function(result) {
+               result.data.forEach((item) => {
+                   let child = "<div class='form-check'>" +
+                       "<input class='form-check-input position-static' name = 'table' style = 'margin-top: 15px;margin-left: 0;margin-right: 10px' type = 'checkbox' value = '" + item.name + "' >" +
+                       "<label class= 'col-form-label fw-bold font-monospace' style = 'margin-top: 5px' > " + item.name + " </label > </div >";
+                   $tables.append(child);
+               })
+           },
+           async: false
+       }).done(function() {
+           let $columns = $('#columns');
+           // click chọn table
+           $('#tables input').change(function(event) {
+               let tableName = event.target.value;
+               if (this.checked) {
+                   // call api lấy ds column thuộc table đã chọn
+                   $.ajax({
+                       url: apiBaseUrl + "/Column?table=" + tableName,
+                       method: 'GET',
+                       async: false,
+                       success: function(result) {
+                           let str = '<div class="col-3 border border-success rounded m-2 flex-fill" id="' + tableName + '" >';
+                           str += '<h6 class = "text-break fs-6 badge bg-primary my-2"> <strong>' + tableName + '</strong> </h4>';
+
+                           result.data.forEach((item) => {
+                               str += "<div class='form-check'>" +
+                                   "<input class='form-check-input position-static ' style = 'margin-top: 15px;margin-right: 10px' name = '" + tableName + "' type = 'checkbox' value = '" + item.columN_NAME + "' >" +
+                                   "<label class= 'col-form-label fw-bold font-monospace' style = 'margin-top: 5px' > " + item.columN_NAME + " </label > </div>";
+                           });
+                           str += "</div>";
+                           $columns.append(str);
+                       }
+                   })
+                   // click chọn column
+                   $('input[name=' + tableName + ']').change(function(event) {
+                       var column = this.value;
+                       if (this.checked) {
+                           if (countColumnChecked < 0) countColumnChecked = 0;
+                           ++countColumnChecked;
+                           if (countColumnChecked > 0) {
+                               $('#table-thongke').removeClass("d-none");
+                               $('#export-query').parent().removeClass('d-none');
+                           }
+                           // get table name $(this).parent().closest('#' + tableName + '').attr('id')
+                           let str = "<tr id=" + tableName + "_" + column + "> " +
+                               "<td scope='col' class = 'text-center align-middle'>" + tableName + "</td>" +
+                               "<td scope='col' class = 'text-center align-middle'>" + column + "</td>" +
+                               "<td>" +
+                               "<select class='form-select'> " +
+                               "<option selected value=''>Chọn</option>" +
+                               "<option value='asc'>Sắp Xếp Tăng dần</option>" +
+                               "<option value='desc'>Sắp Xếp Giảm dần</option>" +
+                               "</select> </td >" +
+                               "<td>" +
+                               "<select class='form-select'> " +
+                               "<option  value='not-select'>Bỏ Chọn</option>" +
+                               "<option selected value='select'>Chọn</option>" +
+                               "</select> </td >" +
+                               "<td>" +
+                               "<select class='form-select'>" +
+                               "<option selected value=''>Không sử dụng</option>" +
+                               "<option value='sum'>Sum</option>" +
+                               "<option value='count'>Count</option>" +
+                               "<option value='min'>Min</option>" +
+                               "<option value='max'>Max</option>" +
+                               "<option value='avg'>Avg</option>" +
+                               "<option value='groupby'>Group By</option>" +
+                               "</select></td>" +
+                               "<td> <input id= 'criteria_" + tableName + "_" + column + "' type='text' class='form-control'> </td>" +
+                               "<td>" +
+                               "<select class='form-select'>" +
+                               "<option selected value='AND'>AND</option>" +
+                               "<option value='OR'>OR</option>" +
+                               "</select></td>" +
+                               "</tr>";
+                           $('#thongke').append(str);
+                       } else {
+                           --countColumnChecked;
+                           if (countColumnChecked <= 0) {
+                               $('#table-thongke').addClass("d-none");
+                               $('#export-query').parent().addClass('d-none');
+                           }
+                           // remove column bên trong table thống kê
+                           $('#' + tableName + '_' + column + '').remove();
+                       }
+
+                       if (countColumnChecked <= 0) {
+                           $('#query').val('');
+                           $('#query').text("");
+                           $('#export-report').parent().addClass('d-none');
+                       }
+                   });
+               } else {
+                   var childrenCheckBox = $('#' + tableName + '').find(':checkbox');
+                   $.each(childrenCheckBox, function(key, value) {
+                       if (this.checked) {
+                           let columnName = this.value;
+                           $('#' + tableName + '_' + columnName + '').remove();
+
+                           --countColumnChecked;
+                           if (countColumnChecked <= 0) {
+                               $('#table-thongke').addClass("d-none");
+                               $('#export-query').parent().addClass('d-none');
+                           }
+                       }
+                   })
+                   $('#' + tableName + '').remove();
+                   let countCheckedTable = 0;
+                   $.each($('#tables').find(':checkbox'), function() {
+                       if (this.checked) countCheckedTable++;
+                   });
+                   if (countCheckedTable > 0 && countColumnChecked > 0) {}
+                   else {
+                       $('#query').val('');
+                       $('#query').text("");
+                       $('#export-report').parent().addClass('d-none');
+                   }
+               }
+           });
+
+       })
+       // thư viện jquery kéo lên xuống element
+       $('tbody').sortable();
+    });
+
+</script>
+}
