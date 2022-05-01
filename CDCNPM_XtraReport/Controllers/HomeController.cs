@@ -1,4 +1,4 @@
-﻿using CDCNPM_XtraReport.Helper;
+﻿using CDCNPM_XtraReport.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
@@ -8,17 +8,17 @@ namespace CDCNPM_XtraReport.Controllers
     [Route("[controller]")]
     public class HomeController : Controller
     {
-        private readonly SqlHelper sqlHelper;
+        private readonly ISQLService _sqlService;
 
-        public HomeController(SqlHelper sqlHelper)
+        public HomeController(ISQLService _sqlService)
         {
-            this.sqlHelper = sqlHelper;
+            this._sqlService = _sqlService;
         }
         [Route("")]
         public ActionResult Index()
         {
             // default connection
-            HttpContext.Session.SetString("connectionString", sqlHelper.GetConnectionString());
+            HttpContext.Session.SetString("connectionString", _sqlService.GetConnectionString());
             return View();
         }
 
@@ -27,7 +27,7 @@ namespace CDCNPM_XtraReport.Controllers
         {
             if (HttpContext.Session.GetString("connectionString") == null || databaseName == "") RedirectToAction("Index");
             HttpContext.Session.SetString("databaseName", databaseName);
-            var connectionString = sqlHelper.GetConnectionString();
+            var connectionString = _sqlService.GetConnectionString();
             var param = connectionString.Split(';');
             StringBuilder connectionStringBuilder = new();
             foreach (var item in param)

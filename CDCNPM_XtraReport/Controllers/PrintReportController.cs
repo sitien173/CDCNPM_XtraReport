@@ -1,4 +1,4 @@
-﻿using CDCNPM_XtraReport.Helper;
+﻿using CDCNPM_XtraReport.Service;
 using CDCNPM_XtraReport.Models;
 using CDCNPM_XtraReport.Reports;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +8,11 @@ namespace CDCNPM_XtraReport.Controllers
     [Route("[controller]")]
     public class PrintReportController : Controller
     {
-        private readonly SqlHelper sqlHelper;
+        private readonly ISQLService _sqlService;
 
-        public PrintReportController(SqlHelper sqlHelper)
+        public PrintReportController(ISQLService _sqlService)
         {
-            this.sqlHelper = sqlHelper;
+            this._sqlService = _sqlService;
         }
 
         // GET: PrintReport
@@ -21,7 +21,7 @@ namespace CDCNPM_XtraReport.Controllers
         public ActionResult Index(PrintReport printReport)
         {
             var connectionString = HttpContext.Session.GetString("connectionString");
-            var dt = sqlHelper.QueryString(printReport.query, connectionString);
+            var dt = _sqlService.QueryString(printReport.query, connectionString);
             var xtraRP = new MyReport(dt, printReport.title);
             ViewBag.Report = xtraRP;
             return View();

@@ -2,21 +2,26 @@
 using System.Data.SqlClient;
 using System.Text;
 
-namespace CDCNPM_XtraReport.Helper
+namespace CDCNPM_XtraReport.Service
 {
-    public class SqlHelper
+    public interface ISQLService
+    {
+        public DataTable QueryString(string sql, string? connectionString);
+        public SqlDataReader ExcuteDataReader(string sql, string? connectionString);
+        public string DisplaySqlErrors(SqlException exception);
+        public string GetConnectionString();
+    }
+    public class SQLService : ISQLService
     {
         private readonly IConfiguration configuration;
         private readonly string connectionString;
         private SqlConnection conn = new SqlConnection();
 
-        public SqlHelper(IConfiguration configuration)
+        public SQLService(IConfiguration configuration)
         {
             this.configuration = configuration;
             this.connectionString = this.configuration.GetConnectionString("DefaultConnection");
         }
-
-        public string GetConnectionString() => connectionString;
 
         public void openConnection(string? connectionString)
         {
@@ -61,5 +66,8 @@ namespace CDCNPM_XtraReport.Helper
             }
             return sb.ToString();
         }
+
+        public string GetConnectionString() => this.connectionString;
+
     }
 }

@@ -3,16 +3,21 @@ using System.Data.SqlClient;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CDCNPM_XtraReport.Helper
+namespace CDCNPM_XtraReport.Service
 {
-    public class QueryHelper
+    public interface IQueryService
     {
-        private readonly SqlHelper sqlHelper;
-        public QueryHelper(SqlHelper sqlHelper)
+        public string GenerateQuery(List<Query> data, string? connectionString);
+
+    }
+    public class QueryService : IQueryService
+    {
+        private readonly ISQLService _sqlService;
+        public QueryService(ISQLService _sqlService)
         {
-            this.sqlHelper = sqlHelper;
+            this._sqlService = _sqlService;
         }
-        public static class PhepToan
+        private static class PhepToan
         {
             public static string SUM { get { return "SUM"; } }
             public static string COUNT { get { return "COUNT"; } }
@@ -28,7 +33,7 @@ namespace CDCNPM_XtraReport.Helper
             var query = @"EXEC sp_fkeys @pktable_name = '{0}'";
             foreach (var table in tables)
             {
-                using (var reader = sqlHelper.ExcuteDataReader(string.Format(query, table), connectionString))
+                using (var reader = _sqlService.ExcuteDataReader(string.Format(query, table), connectionString))
                     if (reader.HasRows)
                     {
                         while (reader.Read())
@@ -203,9 +208,9 @@ namespace CDCNPM_XtraReport.Helper
             try
             {
                 // test query
-                using (var reader = sqlHelper.ExcuteDataReader(query, connectionString)) ;
+                using (var reader = _sqlService.ExcuteDataReader(query, connectionString)) ;
             }
-            catch (SqlException e) { throw new Exception(query + "@@" + sqlHelper.DisplaySqlErrors(e)); }
+            catch (SqlException e) { throw new Exception(query + "@@" + _sqlService.DisplaySqlErrors(e)); }
             return query;
         }
     }

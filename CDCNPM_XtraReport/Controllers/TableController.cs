@@ -1,4 +1,4 @@
-﻿using CDCNPM_XtraReport.Helper;
+﻿using CDCNPM_XtraReport.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 
@@ -9,11 +9,11 @@ namespace CDCNPM_XtraReport.Controllers
     [ApiController]
     public class TableController : ControllerBase
     {
-        private readonly SqlHelper sqlHelper;
+        private readonly ISQLService _sqlService;
 
-        public TableController(SqlHelper sqlHelper)
+        public TableController(ISQLService _sqlService)
         {
-            this.sqlHelper = sqlHelper;
+            this._sqlService = _sqlService;
         }
 
         [Route("")]
@@ -22,7 +22,7 @@ namespace CDCNPM_XtraReport.Controllers
         {
             var connectionString = HttpContext.Session.GetString("connectionString");
             string query = @"select name FROM SYS.tables where name <> 'sysdiagrams'";
-            var data = sqlHelper.QueryString(query, connectionString);
+            var data = _sqlService.QueryString(query, connectionString);
             return new JsonResult(new { success = true, data = data });
         }
 

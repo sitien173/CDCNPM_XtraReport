@@ -1,4 +1,4 @@
-using CDCNPM_XtraReport.Helper;
+using CDCNPM_XtraReport.Service;
 using DevExpress.AspNetCore;
 using DevExpress.AspNetCore.Reporting;
 using Microsoft.AspNetCore.Diagnostics;
@@ -10,7 +10,6 @@ using System.Net;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
 builder.Services.AddDevExpressControls();
 
 builder.Services.AddMvc(option => option.EnableEndpointRouting = false)
@@ -30,8 +29,8 @@ builder.Services.ConfigureReportingServices(configurator =>
     });
 });
 
-builder.Services.AddScoped(typeof(SqlHelper));
-builder.Services.AddScoped(typeof(QueryHelper));
+builder.Services.AddScoped<ISQLService, SQLService>();
+builder.Services.AddScoped<IQueryService, QueryService>();
 
 var app = builder.Build();
 

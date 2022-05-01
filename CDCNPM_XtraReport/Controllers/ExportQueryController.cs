@@ -1,4 +1,4 @@
-﻿using CDCNPM_XtraReport.Helper;
+﻿using CDCNPM_XtraReport.Service;
 using CDCNPM_XtraReport.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
@@ -9,11 +9,11 @@ namespace CDCNPM_XtraReport.Controllers
     [ApiController]
     public class ExportQueryController : ControllerBase
     {
-        private readonly QueryHelper queryHelper;
+        private readonly IQueryService _queryService;
 
-        public ExportQueryController(QueryHelper queryHelper)
+        public ExportQueryController(IQueryService _queryService)
         {
-            this.queryHelper = queryHelper;
+            this._queryService = _queryService;
         }
 
         [Route("")]
@@ -21,7 +21,7 @@ namespace CDCNPM_XtraReport.Controllers
         public IActionResult ExportQuery(List<Query> data)
         {
             var connectionString = HttpContext.Session.GetString("connectionString");
-            try { return new JsonResult(new { success = true, data = queryHelper.GenerateQuery(data, connectionString) }); }
+            try { return new JsonResult(new { success = true, data = _queryService.GenerateQuery(data, connectionString) }); }
             catch (Exception e)
             {
                 var param = Regex.Split(e.Message, "@@");
