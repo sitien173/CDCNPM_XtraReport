@@ -81,11 +81,6 @@ namespace CDCNPM_XtraReport.Service
                     else if (obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
                     {
                         select.Append(obj.Tenbang).Append('.').Append(obj.Tencot).Append(", ");
-                        // lấy group by
-                        groupBy.Append(obj.Tenbang)
-                                 .Append('.')
-                                 .Append(obj.Tencot)
-                                 .Append(", ");
                     }
                     else
                     {
@@ -128,6 +123,13 @@ namespace CDCNPM_XtraReport.Service
                                 .Append(" ");
                     }
                 }
+
+                // lấy group by
+                if (!string.IsNullOrEmpty(obj.Used) && obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                    groupBy.Append(obj.Tenbang)
+                         .Append('.')
+                         .Append(obj.Tencot)
+                         .Append(", ");
 
                 // lấy order by
                 if (obj.IsSortAsc)

@@ -1,7 +1,7 @@
 ﻿using DevExpress.AspNetCore.Reporting.WebDocumentViewer;
 using DevExpress.AspNetCore.Reporting.WebDocumentViewer.Native.Services;
 
-namespace WebApplication1.Controllers
+namespace CDCNPM_XtraReport.Controllers
 {
     public class CustomWebDocumentViewerController : WebDocumentViewerController
     {
