@@ -17,15 +17,7 @@ namespace CDCNPM_XtraReport.Service
         {
             this._sqlService = _sqlService;
         }
-        private static class PhepToan
-        {
-            public static string SUM { get { return "SUM"; } }
-            public static string COUNT { get { return "COUNT"; } }
-            public static string MIN { get { return "MIN"; } }
-            public static string MAX { get { return "MAX"; } }
-            public static string AVG { get { return "AVG"; } }
-            public static string GROUPBY { get { return "GROUPBY"; } }
-        }
+
         private string JoinCriteriaTalbe(HashSet<string> tables, string? connectionString)
         {
             StringBuilder joinQuery = new StringBuilder("(");
@@ -78,7 +70,7 @@ namespace CDCNPM_XtraReport.Service
 
                     if (string.IsNullOrEmpty(obj.Used))
                         select.Append(obj.Tenbang).Append('.').Append(obj.Tencot).Append(", ");
-                    else if (obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                    else if (obj.Used.ToUpper().Equals("GROUPBY"))
                     {
                         select.Append(obj.Tenbang).Append('.').Append(obj.Tencot).Append(", ");
                     }
@@ -98,7 +90,7 @@ namespace CDCNPM_XtraReport.Service
                 // lấy criteria
                 if (!string.IsNullOrEmpty(obj.Criteria.Trim()))
                 {
-                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals("GROUPBY"))
                     {
                         // lấy having
                         having.Append(obj.Used).Append('(')
@@ -125,7 +117,7 @@ namespace CDCNPM_XtraReport.Service
                 }
 
                 // lấy group by
-                if (!string.IsNullOrEmpty(obj.Used) && obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                if (!string.IsNullOrEmpty(obj.Used) && obj.Used.ToUpper().Equals("GROUPBY"))
                     groupBy.Append(obj.Tenbang)
                          .Append('.')
                          .Append(obj.Tencot)
@@ -134,7 +126,7 @@ namespace CDCNPM_XtraReport.Service
                 // lấy order by
                 if (obj.IsSortAsc)
                 {
-                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals("GROUPBY"))
                     {
                         sortAsc.Append(obj.Used).Append('(')
                              .Append(obj.Tenbang).Append('.').Append(obj.Tencot)
@@ -152,7 +144,7 @@ namespace CDCNPM_XtraReport.Service
 
                 if (obj.IsSortDesc)
                 {
-                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals(PhepToan.GROUPBY))
+                    if (!string.IsNullOrEmpty(obj.Used) && !obj.Used.ToUpper().Equals("GROUPBY"))
                     {
                         sortDesc.Append(obj.Used).Append('(')
                              .Append(obj.Tenbang).Append('.').Append(obj.Tencot)
@@ -206,7 +198,7 @@ namespace CDCNPM_XtraReport.Service
             if (fOrderBy.Trim().Equals("ORDER BY")) fOrderBy = string.Empty;
             else fOrderBy = fOrderBy.ToUpper().Trim().TrimEnd(',') + "\n";
 
-            var query = fSelect + fFrom + fCriteria + fGroupBy + fOrderBy + fHaving;
+            var query = fSelect + fFrom + fCriteria + fGroupBy + fHaving + fOrderBy ;
             try
             {
                 // test query
